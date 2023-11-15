@@ -139,7 +139,7 @@ class EpisodeActor(object):
         self.in_queue = False
         self.model_dict = []
         self.lock = False
-        self.ir_forward = Forward_IR("~/DeepSPInN/models/IR_Forward" , True)
+        self.ir_forward = Forward_IR("../models/IR_Forward" , True)
         #self.nmr_forward = P.NMRPredictor("~/DeepSPInN/models/RPNMR/best_model.meta","~/DeepSPInN/models/RPNMR/best_model.00000000.state",True)
         self.cached_ir_size = 0
         self.cached_ir_forward = dict()
@@ -284,7 +284,7 @@ def run():
 
     episode_actors = [EpisodeActor.remote(i) for i in range(NUM_GPU)]
 
-    with open('~/DeepSPInN/data/qm9_clean_ir_nmr.pickle', 'rb') as handle:
+    with open('../data/qm9_clean_ir_nmr.pickle', 'rb') as handle:
         ir_all_datasets = pickle.load(handle)
     ir_train_dat = ir_all_datasets["test"]
 
