@@ -104,6 +104,8 @@ class Env:
 #           
 #            sis = (sis + nmr_dist) / 2
 
+            return sis
+
             present_mol = Chem.MolFromSmiles(Chem.MolToSmiles(mol))
             present_mol.UpdatePropertyCache()
             present_sdtq = [0, 0, 0, 0]

@@ -39,7 +39,7 @@ nmr_list = None
 
 @ray.remote
 def execute_episode(ep, idx, model, valuemodel,nmr_list,episode_actor,ir_train_dat,gpu_id):
-    EPISODES_OUTPUT = 'test_outputs/' + 'output_' + str(idx) + '.pkl'
+    EPISODES_OUTPUT = './test_outputs/' + 'output_' + str(idx) + '.pkl'
 
     print('\n\nExecuting episode', ep, 'on GPU', gpu_id)
 
@@ -284,13 +284,13 @@ def run():
 
     episode_actors = [EpisodeActor.remote(i) for i in range(NUM_GPU)]
 
-    with open('../data/qm9_clean_ir_nmr.pickle', 'rb') as handle:
+    with open('../data/qm9_train_test_val_ir_nmr.pickle', 'rb') as handle:
         ir_all_datasets = pickle.load(handle)
     ir_train_dat = ir_all_datasets["test"]
 
     # remote_ap = APModel.remote(True)
     model =  ActionPredictionModel(88, 6, 88, 64)
-    model.load_state_dict(torch.load("../train/saved_models/prior21.state",map_location='cpu'))
+    model.load_state_dict(torch.load("../train/saved_models/prior1.state",map_location='cpu'))
     model_episode =  ActionPredictionModel(88, 6, 88, 64)
     model_episode.load_state_dict(deepcopy(model.state_dict()))
 

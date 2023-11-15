@@ -151,7 +151,7 @@ class EpisodeActor(object):
         self.cached_ir_size = 0
 
         try:
-            with open('~/DeepSPInN/data/ir_cache_' +  str(self.idx) + '.pkl', 'rb') as handle:
+            with open('../data/ir_cache_' +  str(self.idx) + '.pkl', 'rb') as handle:
                 self.cached_ir_forward = pickle.load(handle)
         except Exception as e:
             self.cached_ir_forward = {}
@@ -172,7 +172,7 @@ class EpisodeActor(object):
                 # print(self.idx, "has", self.new_spectra, "new spectra")
                 if self.new_spectra > 50:
                     # print(self.idx, "dumped")
-                    with open('~/DeepSPInN/data/ir_cache_' +  str(self.idx) + '.pkl', 'wb') as handle:
+                    with open('../data/ir_cache_' +  str(self.idx) + '.pkl', 'wb') as handle:
                         pickle.dump(self.cached_ir_forward, handle, pickle.HIGHEST_PROTOCOL)
                     self.new_spectra = 0
             else:
@@ -264,7 +264,7 @@ def run():
 
     episode_actor = EpisodeActor.remote()
 
-    with open('~/DeepSPInN/data/qm9_clean_ir_nmr.pickle', 'rb') as handle:
+    with open('../data/qm9_train_test_val_ir_nmr.pickle', 'rb') as handle:
         ir_all_datasets = pickle.load(handle)
     ir_train_dat = ir_all_datasets["train"]
 

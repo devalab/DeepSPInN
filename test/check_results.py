@@ -21,10 +21,10 @@ wrong_mols = list()
 wrong_mols_nums = list()
 
 #for filename in os.listdir('~/DeepSPInN/test/test_outputs'):
-test_path = '~/DeepSPInN/test/test_outputs/'
+test_path = './test_outputs/'
 
 all_files = os.listdir(test_path)
-all_files = [test_path+x for x in all_files]
+all_files = [test_path+x for x in all_files if 'output' in x]
 
 all_files = sorted(all_files, key=lambda x:int(x.split('_')[-1].split('.')[0]))
 
