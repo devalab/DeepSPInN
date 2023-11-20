@@ -37,6 +37,23 @@ PRETRAINING_SIZE = 3000
 
 nmr_list = None
 
+def other_episode_success(filename):
+    # Check if the log has the correct target molecule found by some other episode
+    try:
+        with open(filename, 'rb') as f: # open in readonly mode
+            current_mol_log = pickle.load(f)
+    except:
+        return False
+    
+    all_smiles = list()
+    for episode_result in current_mol_log:
+        reached_mol = Chem.CanonSmiles(episode_result[2][-1])
+        all_smiles.append(reached_mol)
+    
+    target_smiles = Chem.CanonSmiles(current_mol_log[0][0])
+    return target_smiles in all_smiles
+
+
 @ray.remote
 def execute_episode(ep, idx, model, valuemodel,nmr_list,episode_actor,ir_train_dat,gpu_id):
     EPISODES_OUTPUT = './test_outputs/' + 'output_' + str(idx) + '.pkl'
@@ -47,6 +64,8 @@ def execute_episode(ep, idx, model, valuemodel,nmr_list,episode_actor,ir_train_d
     # initialize mcts
     np.random.seed()
     env = Env([2,0,0,0], np.zeros(1801), [(5,3), (5,3)]) # dummy values to initialize the env
+
+    another_episode_successful = False
 
     timepoints = []
     a_store = []
@@ -89,7 +108,9 @@ def execute_episode(ep, idx, model, valuemodel,nmr_list,episode_actor,ir_train_d
         sys.stdout.flush()
 
         logging_steps.append(str(env.state))
-        if terminal:
+
+        another_episode_successful = other_episode_success(EPISODES_OUTPUT)
+        if terminal or another_episode_successful:
             break
         else:
             mcts.forward(a, s1)
@@ -97,6 +118,9 @@ def execute_episode(ep, idx, model, valuemodel,nmr_list,episode_actor,ir_train_d
 
     # Finished episode
     sys.stdout.flush()
+
+    if another_episode_successful:
+        return 1
 
     logging_self_reward = env.reward(episode_actor, None, None, logging_target)
     logging_reward = R
@@ -271,9 +295,9 @@ def run():
 
     try:
         argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv,"s:e:",["start=","end="])
+        opts, args = getopt.getopt(argv,"s:e:d:",["start=","end=","dataset="])
     except getopt.GetoptError:
-        print("Input start and end ranges of IDs")
+        print("Input start and end ranges of IDs and the dataset type")
     start_id = 0
     end_id = 0
     for opt, arg in opts:
@@ -281,16 +305,18 @@ def run():
             start_id = int(arg)
         elif opt in ("-e", "--end"):
             end_id = int(arg)
+        elif opt in ("-d", "--dataset"):
+            dataset_type = str(arg)
 
     episode_actors = [EpisodeActor.remote(i) for i in range(NUM_GPU)]
 
     with open('../data/qm9_train_test_val_ir_nmr.pickle', 'rb') as handle:
         ir_all_datasets = pickle.load(handle)
-    ir_train_dat = ir_all_datasets["test"]
+    ir_train_dat = ir_all_datasets[dataset_type]
 
     # remote_ap = APModel.remote(True)
     model =  ActionPredictionModel(88, 6, 88, 64)
-    model.load_state_dict(torch.load("../train/saved_models/prior1.state",map_location='cpu'))
+    model.load_state_dict(torch.load("../train/saved_models/prior24.state",map_location='cpu'))
     model_episode =  ActionPredictionModel(88, 6, 88, 64)
     model_episode.load_state_dict(deepcopy(model.state_dict()))
 
@@ -298,13 +324,13 @@ def run():
     valuemodel_episode =  "valuemodel"
     ### --------------models------------------ ###
 
-    num_processes = 5
+    num_processes = 4
     num_episodes = 2
 
     for mol_id in range(start_id, end_id):
     # tricky_mols = [1, 9, 13, 57, 59, 79, 82, 95, 108, 110, 167, 169, 174, 187, 194, 197]
     # for mol_id in tricky_mols:
-        # each molecule runs for num_episodes * num_processes times
+        # each molecule runs for num_episodes * num_processes * NUM_GPU times
         for i in range(num_episodes):
             for gpu_id in range(NUM_GPU):
                 ray.get([episode_actors[gpu_id].set_lock.remote(True)])
