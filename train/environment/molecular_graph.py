@@ -39,7 +39,7 @@ def makeSpectrumFeature(shift, splitting, bins = 64, shiftRange = (0,220), sd=2)
     gaussianList = signal.gaussian(bins*3,sd)
     shiftedList = gaussianList[int(bins*1.5-centre):int(bins*2.5-centre)]
     splitting_list = [0] * 4
-    splitting_list[splitting] = 1
+    # splitting_list[splitting] = 1
     output = np.append(shiftedList, splitting_list)
     return output
 

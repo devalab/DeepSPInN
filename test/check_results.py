@@ -4,6 +4,8 @@ import pickle
 import numpy as np
 from rdkit import Chem
 
+from tqdm import tqdm
+
 if len(sys.argv) == 1:
     print_mols = False
 else:
@@ -22,21 +24,19 @@ wrong_mols_nums = list()
 
 #for filename in os.listdir('~/DeepSPInN/test/test_outputs'):
 test_path = './test_outputs/'
-ar_test_path = '/home2/arihanth.srikar/sriram/DeepSPInN/test/test_outputs/'
-
 all_files = os.listdir(test_path)
 all_files = [test_path+x for x in all_files if 'output' in x]
-ar_all_files = os.listdir(ar_test_path)
-ar_all_files = [ar_test_path+x for x in ar_all_files if 'output' in x]
-
-all_files = all_files + ar_all_files
 
 all_files = sorted(all_files, key=lambda x:int(x.split('_')[-1].split('.')[0]))
 
-for filename in all_files:
+for filename in tqdm(all_files):
     # with open(os.path.join('~/DeepSPInN/test/test_outputs', filename), 'rb') as f: # open in readonly mode
-    with open(filename, 'rb') as f: # open in readonly mode
-        current_mol_log = pickle.load(f)
+    try:
+        with open(filename, 'rb') as f: # open in readonly mode
+            current_mol_log = pickle.load(f)
+    except Exception as e:
+        print(filename, e)
+        continue
         
     mol_id = int(filename.split('_')[-1].split('.')[0])
     all_mols.append(mol_id)
@@ -89,8 +89,9 @@ for filename in all_files:
             print(target_smiles, current_mol_log[0][1])
             print('\n'.join(all_smiles[:5]))
 
-print('Wrong mols', wrong_mols)
-print(wrong_mols_nums)
+if print_mols:
+    print('Wrong mols', wrong_mols)
+    print(wrong_mols_nums)
 
 print('Top 1 (%):', 100.0* num_top_1/num_total)
 print('Top 3 (%):', 100.0* num_top_3/num_total)

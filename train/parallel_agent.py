@@ -265,6 +265,7 @@ def run():
     episode_actor = EpisodeActor.remote()
 
     with open('../data/qm9_train_test_val_ir_nmr.pickle', 'rb') as handle:
+    # with open('../data/qm9_small_train_big_test.pickle', 'rb') as handle:
         ir_all_datasets = pickle.load(handle)
     ir_train_dat = ir_all_datasets["train"]
 

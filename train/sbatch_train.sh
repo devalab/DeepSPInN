@@ -1,14 +1,13 @@
 #!/bin/bash
 
 #SBATCH --mem-per-cpu=3000
-##SBATCH -A research
-#SBATCH -n 40
+#SBATCH -A research
+#SBATCH -n 39
 #SBATCH --gres=gpu:4
 #SBATCH -t 4-00:00:00
 #SBATCH --mail-type=NONE
 #SBATCH --job-name="DeepSPInN Training"
 #SBATCH --output=ir_nmr_file.txt
-#SBATCH --nodelist=gnode030
 
 ulimit -n 40960
 
@@ -27,6 +26,6 @@ mamba install -c conda-forge rdkit --yes
 pip install tqdm ray chemprop==1.3.0
 
 cd /home2/sriram.devata/DeepSPInN/train
-ray start --head --num-cpus=40 --num-gpus=4 --object-store-memory 50000000000
+ray start --head --num-cpus=39 --num-gpus=4 --object-store-memory 50000000000
 python parallel_agent.py
 

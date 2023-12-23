@@ -1,10 +1,15 @@
-mamba create --prefix ./deepspinn python=3.9.6
-mamba activate ./deepspinn
-# pip install torch==1.8.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
-module load u18/cuda/10.2
+#!/bin/bash
+
+mamba create -n deepspinn python=3.9.6 --yes
+mamba activate deepspinn
+
+# module load u18/cuda/10.2
+
 pip install torch==1.9.0+cu102 -f https://download.pytorch.org/whl/torch_stable.html
-mamba install -c conda-forge ipdb
-# mamba install -c dglteam dgl==0.6.1
-mamba install -c dglteam dgl-cuda10.2
-mamba install -c conda-forge rdkit
+mamba install -c conda-forge ipdb --yes
+mamba install -c dglteam dgl-cuda10.2 --yes
+mamba install -c conda-forge rdkit --only-deps --yes
+pip install protobuf==3.20.*
+pip install rdkit-pypi
 pip install tqdm ray chemprop==1.3.0
+

@@ -106,31 +106,31 @@ class Env:
 
             return sis
 
-            present_mol = Chem.MolFromSmiles(Chem.MolToSmiles(mol))
-            present_mol.UpdatePropertyCache()
-            present_sdtq = [0, 0, 0, 0]
-            for atom in present_mol.GetAtoms():
-                if atom.GetSymbol() == 'C':
-                    h_count = atom.GetTotalNumHs()
-                    if h_count >=0 and h_count <= 3:
-                        present_sdtq[h_count] += 1
+            # present_mol = Chem.MolFromSmiles(Chem.MolToSmiles(mol))
+            # present_mol.UpdatePropertyCache()
+            # present_sdtq = [0, 0, 0, 0]
+            # for atom in present_mol.GetAtoms():
+            #     if atom.GetSymbol() == 'C':
+            #         h_count = atom.GetTotalNumHs()
+            #         if h_count >=0 and h_count <= 3:
+            #             present_sdtq[h_count] += 1
 
 
-            target_splits = [x[1] for x in self.targetNMR]
-            target_sdtq = [target_splits.count(0), target_splits.count(1), target_splits.count(2), target_splits.count(3)]
-            
-            if target_sdtq[3] > present_sdtq[3]: # you needed to have more -CH3
-                sis = 0
-            elif target_sdtq[3] == present_sdtq[3] and target_sdtq[2] > present_sdtq[2]: # nice -CH3, but you needed to have more -CH2
-                sis = 0
-            elif target_sdtq[3] == present_sdtq[3] and target_sdtq[2] == present_sdtq[2] and target_sdtq[1] > present_sdtq[1]:
-                sis = 0
+            # target_splits = [x[1] for x in self.targetNMR]
+            # target_sdtq = [target_splits.count(0), target_splits.count(1), target_splits.count(2), target_splits.count(3)]
+            # 
+            # if target_sdtq[3] > present_sdtq[3]: # you needed to have more -CH3
+            #     sis = 0
+            # elif target_sdtq[3] == present_sdtq[3] and target_sdtq[2] > present_sdtq[2]: # nice -CH3, but you needed to have more -CH2
+            #     sis = 0
+            # elif target_sdtq[3] == present_sdtq[3] and target_sdtq[2] == present_sdtq[2] and target_sdtq[1] > present_sdtq[1]:
+            #     sis = 0
            
-            if target_sdtq != present_sdtq and sis!=0:
-                sis = 0
-                # print('Set SIS to 0 for', Chem.MolToSmiles(mol), 'for target', self.targetmol)
+            # if target_sdtq != present_sdtq and sis!=0:
+            #     sis = 0
+            #     # print('Set SIS to 0 for', Chem.MolToSmiles(mol), 'for target', self.targetmol)
 
-            return sis
+            # return sis
 
         except Exception as e:
             print('Reward error', e)

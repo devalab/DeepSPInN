@@ -88,7 +88,7 @@ def execute_episode(ep, idx, model, valuemodel,nmr_list,episode_actor,ir_train_d
         max_leaf_r = mcts.search(n_mcts=n_mcts, c=1, env=env, episode_actor=episode_actor)  # perform a forward search
 
         # Check if a good leaf has been reached, increase n_mcts otherwise
-        if max(max_leaf_r_hist) > max_leaf_r:
+        if max(max_leaf_r_hist) > max_leaf_r and n_mcts < 400:
             n_mcts = 400
             # print('Updated n_mcts to', n_mcts, max_leaf_r_hist, max_leaf_r)
         max_leaf_r_hist.append(max_leaf_r)
