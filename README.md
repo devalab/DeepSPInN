@@ -36,3 +36,7 @@ python parallel_agent.py -s MOL_START_INDEX -e MOL_END_INDEX -d test
 For testing on a HPC with a Slurm workload manager, the script `test/sbatch_test.sh` is a good starting point for an SBATCH script that tests the code for 1000 molecules in the test set. 
 
 The script creates log files in the folder `test/test_outputs/`. These log files can be analysed with the script `test/test_outputs/check_results.py`.
+
+### Miscellaneous
+
+The code to create all the images and results presented in the mansucript is in `miscellaneous/Illustrations.ipynb`.
